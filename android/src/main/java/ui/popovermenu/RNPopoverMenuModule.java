@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableContainer;
 import android.os.StrictMode;
 import android.support.annotation.DrawableRes;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.AppCompatDrawableManager;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.Log;
@@ -49,6 +50,8 @@ import kotlin.jvm.functions.Function1;
 
 
 public class RNPopoverMenuModule extends ReactContextBaseJavaModule {
+
+  private MaterialPopupMenu menu;
 
   public RNPopoverMenuModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -117,7 +120,13 @@ public class RNPopoverMenuModule extends ReactContextBaseJavaModule {
                       LinearLayout layout = (LinearLayout) o;
 
                       AppCompatImageView imageView = (AppCompatImageView) layout.findViewById(R.id.mpm_popup_menu_item_icon);
-                      imageView.setImageTintMode(PorterDuff.Mode.DST);
+                      if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        imageView.setImageTintMode(PorterDuff.Mode.DST);
+                      } else {
+                        Drawable drawable = imageView.getDrawable();
+                        drawable = DrawableCompat.wrap(drawable);
+                        DrawableCompat.setTintMode(drawable, PorterDuff.Mode.SRC_OVER);
+                      }
 
                       TextView textView = (TextView) layout.findViewById(R.id.mpm_popup_menu_item_label);
 
@@ -170,10 +179,17 @@ public class RNPopoverMenuModule extends ReactContextBaseJavaModule {
     this.getCurrentActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        MaterialPopupMenu menu = popupMenuBuilder.build();
+        menu = popupMenuBuilder.build();
         menu.show(activity, viewGroup);
       }
     });
+  }
+
+  @ReactMethod
+  public void Show() {
+    if (menu != null) {
+      menu.dismiss();
+    }
   }
 
   @TargetApi(21)

@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { findNodeHandle, ViewPropTypes, NativeModules } from "react-native";
+import { findNodeHandle, ViewPropTypes, NativeModules, Platform } from "react-native";
 import PropTypes from "prop-types";
 
 import RNVectorHelper from './RNVectorHelper'
@@ -59,8 +59,14 @@ class Popover extends PureComponent {
     shadowOffsetY: 2
   };
 
-  static Show(ref, props) {
+  static Dismiss() {
+    if (Platform.OS === 'android')
+    {
+      RNPopoverMenu.Dismiss();
+    }
+  }
 
+  static Show(ref, props) {
     // unified default props handler
     Object.keys(Popover.defaultProps).map((id) => {
       if(props[id] === undefined) props[id] = Popover.defaultProps[id];
