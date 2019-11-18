@@ -186,7 +186,7 @@ public class RNPopoverMenuModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void Show() {
+  public void Dismiss() {
     if (menu != null) {
       menu.dismiss();
     }
